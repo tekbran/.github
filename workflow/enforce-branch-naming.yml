@@ -1,0 +1,25 @@
+name: Enforce Branch Naming Convention
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          echo "Validating branch name: $BRANCH_NAME"
+          
+          # Define the allowed branch name pattern
+          PATTERN="^(feature|bugfix|hotfix|poc)\/JIRA-[0-9]+-[a-z0-9-]+$"
+
+          if [[ ! "$BRANCH_NAME" =~ $PATTERN ]]; then
+            echo "❌ Branch name does not follow the required pattern: feature/JIRA-123-description"
+            exit 1
+          fi
+          
+          echo "✅ Branch name is valid!"
